@@ -1,0 +1,23 @@
+#!/bin/bash -eu
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+perl_version=$1
+curr=$2
+next=$3
+
+OSE_20_LATEST="0.0.10"
+OSE_21_GA="0.0.15"
+
+# Needed for version 0.0.1 -> 0.1.11 during the 2.0.z lifetime.  This can
+# safely be removed after 2.2.
+if version_lt $curr $OSE_20_LATEST; then
+  if [ -e $OPENSHIFT_HOMEDIR/perl/metadata/jenkins_shell_command ]; then
+    rm -f $OPENSHIFT_HOMEDIR/perl/metadata/jenkins_shell_command
+  fi
+fi
+
+if version_lt $curr $OSE_21_GA; then
+	chown $OPENSHIFT_GEAR_UUID:$OPENSHIFT_GEAR_UUID $OPENSHIFT_PERL_DIR/etc/conf.d/openshift.conf
+	chcon -u unconfined_u $OPENSHIFT_PERL_DIR/etc/conf.d/openshift.conf
+fi
